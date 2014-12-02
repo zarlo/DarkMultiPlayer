@@ -81,6 +81,7 @@
     <Compile Include="VesselUpdate.cs" />
     <Compile Include="VesselUtil.cs" />
     <Compile Include="VesselProtoUpdate.cs" />
+    <Compile Include="HackyInAtmoLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
