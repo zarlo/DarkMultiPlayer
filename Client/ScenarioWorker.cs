@@ -341,12 +341,13 @@ namespace DarkMultiPlayer
                     DarkLog.Debug("Loading existing " + entry.scenarioName + " scenario module");
                     try
                     {
-                        if (psm.moduleRef == null)
-                        {
-                            DarkLog.Debug("Fixing null scenario module!");
-                            psm.moduleRef = new ScenarioModule();
-                        }
+                        ScenarioRunner.RemoveModule(psm.moduleRef);
+                        psm.moduleRef = ScenarioRunner.fetch.AddModule(entry.scenarioNode);
                         psm.moduleRef.Load(entry.scenarioNode);
+                        psm.moduleRef.targetScenes = psm.targetScenes;
+
+                        // JoshBlake: sync the game with scenario runner
+                        HighLogic.CurrentGame.Updated();
                     }
                     catch (Exception e)
                     {
