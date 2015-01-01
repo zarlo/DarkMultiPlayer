@@ -53,8 +53,36 @@ namespace DarkMultiPlayerServer.Messages
                 {
                     byte[] scenarioData = Compression.DecompressIfNeeded(mr.Read<byte[]>());
                     File.WriteAllBytes(Path.Combine(Server.universeDirectory, "Scenarios", client.playerName, scenarioName[i] + ".txt"), scenarioData);
+                    if (scenarioName[i] == "ScenarioDestructibles")
+                    {
+                        RelayScenarioModule(client, scenarioName[i], scenarioData);
+                    }
                 }
             }
+        }
+
+        public static void RelayScenarioModule(ClientObject fromClient, string scenarioName, byte[] scenarioData)
+        {
+            //Build messages
+            ServerMessage uncompressedMessage = new ServerMessage();
+            ServerMessage compressedMessage = new ServerMessage();
+            uncompressedMessage.type = ServerMessageType.SCENARIO_DATA;
+            compressedMessage.type = ServerMessageType.SCENARIO_DATA;
+            //Compressed
+            using (MessageWriter mw = new MessageWriter())
+            {
+                mw.Write<string[]>(new string[] { scenarioName });
+                mw.Write<byte[]>(Compression.CompressIfNeeded(scenarioData));
+                compressedMessage.data = mw.GetMessageBytes();
+            }
+            //Uncompressed
+            using (MessageWriter mw = new MessageWriter())
+            {
+                mw.Write<string[]>(new string[] { scenarioName });
+                mw.Write<byte[]>(Compression.AddCompressionHeader(scenarioData, false));
+                uncompressedMessage.data = mw.GetMessageBytes();
+            }
+            ClientHandler.SendToAllAutoCompressed(fromClient, compressedMessage, uncompressedMessage, false);
         }
     }
 }
