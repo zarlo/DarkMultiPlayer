@@ -24,6 +24,7 @@ namespace DarkMultiPlayerServer.Messages
                 mw.Write<int>(numberOfVessels);
                 //mw.Write<int>(numberOfScenarioModules);
                 mw.Write<int>(Settings.settingsStore.screenshotHeight);
+                mw.Write<int>(Settings.settingsStore.numberOfUntrackedAsteroids);
                 mw.Write<int>(Settings.settingsStore.numberOfAsteroids);
                 mw.Write<string>(Settings.settingsStore.consoleIdentifier);
                 mw.Write<int>((int)Settings.settingsStore.gameDifficulty);

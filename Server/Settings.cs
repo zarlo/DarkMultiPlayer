@@ -205,7 +205,8 @@ namespace DarkMultiPlayerServer
             descriptionList.Add("screenshotDirectory", "Specify a custom screenshot directory.\n#This directory must exist in order to be used. Leave blank to store it in Universe.");
             descriptionList.Add("autoNuke", "Specify in minutes how often /nukeksc automatically runs. 0 = Disabled");
             descriptionList.Add("autoDekessler", "Specify in minutes how often /dekessler automatically runs. 0 = Disabled");
-            descriptionList.Add("numberOfAsteroids", "How many untracked asteroids to spawn into the universe. 0 = Disabled");
+            descriptionList.Add("numberOfUntrackedAsteroids", "How many untracked asteroids to spawn into the universe. 0 = Disabled");
+            descriptionList.Add("numberOfAsteroids", "How many asteroids, tracked and untracked, should exist in the universe.");
             descriptionList.Add("consoleIdentifier", "Specify the name that will appear when you send a message using the server's console.");
             descriptionList.Add("serverMotd", "Specify the server's MOTD (message of the day).");
             descriptionList.Add("expireScreenshots", "Specify the amount of days a screenshot should be considered as expired and deleted. 0 = Disabled");
@@ -237,7 +238,8 @@ namespace DarkMultiPlayerServer
         public string screenshotDirectory = "";
         public int autoNuke = 0;
         public int autoDekessler = 30;
-        public int numberOfAsteroids = 30;
+        public int numberOfUntrackedAsteroids = 30;
+        public int numberOfAsteroids = 40;
         public string consoleIdentifier = "Server";
         public string serverMotd = "Welcome, %name%!";
         public double expireScreenshots = 0;

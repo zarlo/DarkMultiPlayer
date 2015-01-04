@@ -1029,6 +1029,7 @@ namespace DarkMultiPlayer
                 numberOfVessels = mr.Read<int>();
                 ScreenshotWorker.fetch.screenshotHeight = mr.Read<int>();
                 AsteroidWorker.fetch.maxNumberOfUntrackedAsteroids = mr.Read<int>();
+                AsteroidWorker.fetch.maxNumberOfAsteroids = mr.Read<int>();
                 ChatWorker.fetch.consoleIdentifier = mr.Read<string>();
                 Client.fetch.serverDifficulty = (GameDifficulty)mr.Read<int>();
                 if (Client.fetch.serverDifficulty != GameDifficulty.CUSTOM)

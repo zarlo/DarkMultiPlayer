@@ -10,6 +10,7 @@ namespace DarkMultiPlayer
         private static AsteroidWorker singleton;
         //How many asteroids to spawn into the server
         public int maxNumberOfUntrackedAsteroids;
+        public int maxNumberOfAsteroids;
         public bool workerEnabled;
         //private state variables
         private float lastAsteroidCheck;
@@ -67,7 +68,7 @@ namespace DarkMultiPlayer
                             {
                                 if ((HighLogic.CurrentGame.flightState.protoVessels.Count == 0) || (FlightGlobals.fetch.vessels.Count > 0))
                                 {
-                                    int beforeSpawn = GetAsteroidCount();
+                                    int beforeSpawn = GetUntrackedAsteroidCount();
                                     int asteroidsToSpawn = maxNumberOfUntrackedAsteroids - beforeSpawn;
                                     for (int asteroidsSpawned = 0; asteroidsSpawned < asteroidsToSpawn; asteroidsSpawned++)
                                     {
@@ -97,6 +98,15 @@ namespace DarkMultiPlayer
                                         NetworkWorker.fetch.SendVesselProtoMessage(pv, false, false);
                                     }
                                 }
+
+                                if (GetTrackedAsteroidCount() > (maxNumberOfAsteroids - maxNumberOfUntrackedAsteroids))
+                                {
+                                    if (AsteroidIsTracked(asteroid.protoVessel))
+                                    {
+                                        DarkLog.Debug("Killing asteroid " + asteroid.name + ", exceeds the max amount of server asteroids");
+                                        NetworkWorker.fetch.SendVesselRemove(asteroid.id.ToString(), false);
+                                    }
+                                }
                             }
                         }
                     }
@@ -116,7 +126,7 @@ namespace DarkMultiPlayer
                         {
                             if (!serverAsteroids.Contains(checkVessel.id.ToString()))
                             {
-                                if (GetAsteroidCount() <= maxNumberOfUntrackedAsteroids)
+                                if (GetAsteroidCount() <= maxNumberOfAsteroids)
                                 {
                                     DarkLog.Debug("Spawned in new server asteroid!");
                                     serverAsteroids.Add(checkVessel.id.ToString());
@@ -188,12 +198,27 @@ namespace DarkMultiPlayer
             return false;
         }
 
+        public bool AsteroidIsTracked(ProtoVessel checkVessel)
+        {
+            if (checkVessel != null)
+            {
+                if (VesselIsAsteroid(checkVessel))
+                {
+                    if (checkVessel.vesselRef.DiscoveryInfo.trackingStatus.Value == "Tracking")
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         private Vessel[] GetCurrentAsteroids()
         {
             List<Vessel> currentAsteroids = new List<Vessel>();
             foreach (Vessel checkVessel in FlightGlobals.fetch.vessels)
             {
-                if (VesselIsAsteroid(checkVessel))
+                if (VesselIsAsteroid(checkVessel.protoVessel))
                 {
                     currentAsteroids.Add(checkVessel);
                 }
@@ -201,10 +226,56 @@ namespace DarkMultiPlayer
             return currentAsteroids.ToArray();
         }
 
-        private int GetAsteroidCount()
+        private Vessel[] GetCurrentUntrackedAsteroids()
+        {
+            List<Vessel> currentAsteroids = new List<Vessel>();
+            foreach (Vessel checkVessel in FlightGlobals.fetch.vessels)
+            {
+                if (!AsteroidIsTracked(checkVessel.protoVessel))
+                {
+                    currentAsteroids.Add(checkVessel);
+                }
+            }
+            return currentAsteroids.ToArray();
+        }
+
+        private Vessel[] GetCurrentTrackedAsteroids()
+        {
+            List<Vessel> currentAsteroids = new List<Vessel>();
+            foreach (Vessel checkVessel in FlightGlobals.fetch.vessels)
+            {
+                if (AsteroidIsTracked(checkVessel.protoVessel))
+                {
+                    currentAsteroids.Add(checkVessel);
+                }
+            }
+            return currentAsteroids.ToArray();
+        }
+
+        private int GetTrackedAsteroidCount()
+        {
+            List<string> trackedAsteroids = new List<string>();
+            foreach (Vessel checkAsteroid in GetCurrentTrackedAsteroids())
+            {
+                if (!trackedAsteroids.Contains(checkAsteroid.id.ToString()))
+                {
+                    trackedAsteroids.Add(checkAsteroid.id.ToString());
+                }
+            }
+            foreach (ProtoVessel checkAsteroid in HighLogic.CurrentGame.flightState.protoVessels)
+            {
+                if (AsteroidIsTracked(checkAsteroid))
+                {
+                    trackedAsteroids.Add(checkAsteroid.vesselID.ToString());
+                }
+            }
+            return trackedAsteroids.Count;
+        }
+
+        private int GetUntrackedAsteroidCount()
         {
             List<string> seenAsteroids = new List<string>();
-            foreach (Vessel checkAsteroid in GetCurrentAsteroids())
+            foreach (Vessel checkAsteroid in GetCurrentUntrackedAsteroids())
             {
                 if (!seenAsteroids.Contains(checkAsteroid.id.ToString()))
                 {
@@ -213,7 +284,7 @@ namespace DarkMultiPlayer
             }
             foreach (ProtoVessel checkAsteroid in HighLogic.CurrentGame.flightState.protoVessels)
             {
-                if (VesselIsAsteroid(checkAsteroid))
+                if (!AsteroidIsTracked(checkAsteroid))
                 {
                     if (!seenAsteroids.Contains(checkAsteroid.vesselID.ToString()))
                     {
@@ -222,6 +293,11 @@ namespace DarkMultiPlayer
                 }
             }
             return seenAsteroids.Count;
+        }
+
+        private int GetAsteroidCount()
+        {
+            return GetTrackedAsteroidCount() + GetUntrackedAsteroidCount();
         }
 
         /// <summary>
