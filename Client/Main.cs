@@ -98,6 +98,7 @@ namespace DarkMultiPlayer
                 resetEvent.Add(CraftLibraryWorker.Reset);
                 resetEvent.Add(DebugWindow.Reset);
                 resetEvent.Add(DynamicTickWorker.Reset);
+                resetEvent.Add(GroupWindow.Reset);
                 resetEvent.Add(FlagSyncer.Reset);
                 resetEvent.Add(PlayerColorWorker.Reset);
                 resetEvent.Add(PlayerStatusWindow.Reset);
@@ -478,6 +479,7 @@ namespace DarkMultiPlayer
             //Options window: 6711
             //Converter window: 6712
             //Disclaimer window: 6713
+            //Group window: 6714
             long startClock = Profiler.DMPReferenceTime.ElapsedTicks;
             if (showGUI && toolbarShowGUI)
             {

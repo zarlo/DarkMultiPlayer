@@ -165,6 +165,7 @@ namespace DarkMultiPlayer
             ChatWorker.fetch.display = GUILayout.Toggle(ChatWorker.fetch.display, "Chat", chatButtonStyle);
             CraftLibraryWorker.fetch.display = GUILayout.Toggle(CraftLibraryWorker.fetch.display, "Craft", buttonStyle);
             DebugWindow.fetch.display = GUILayout.Toggle(DebugWindow.fetch.display, "Debug", buttonStyle);
+            GroupWindow.fetch.display = GUILayout.Toggle(GroupWindow.fetch.display, "Group", buttonStyle);
             GUIStyle screenshotButtonStyle = buttonStyle;
             if (ScreenshotWorker.fetch.screenshotButtonHighlighted)
             {
@@ -594,7 +595,6 @@ namespace DarkMultiPlayer
                 chatButtonStyle = highlightStyle;
             }
             ChatWorker.fetch.display = GUILayout.Toggle(ChatWorker.fetch.display, "C", chatButtonStyle);
-            DebugWindow.fetch.display = GUILayout.Toggle(DebugWindow.fetch.display, "D", buttonStyle);
             GUIStyle screenshotButtonStyle = buttonStyle;
             if (ScreenshotWorker.fetch.screenshotButtonHighlighted)
             {

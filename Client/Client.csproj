@@ -88,6 +88,7 @@
     <Compile Include="ToolbarWrapper.cs" />
     <Compile Include="ToolbarSupport.cs" />
     <Compile Include="GroupSystem.cs" />
+    <Compile Include="GroupWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\DarkMultiPlayerCommon.csproj">
