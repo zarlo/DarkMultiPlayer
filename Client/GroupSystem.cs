@@ -32,7 +32,6 @@ namespace DarkMultiPlayer
                         case GroupMessageType.SET:
                             {
                                 string groupName = mr.Read<string>();
-                                string[] groupMembers = mr.Read<string[]>();
                                 GroupPrivacy groupPrivate = (GroupPrivacy)mr.Read<int>();
                                 string groupSalt = null;
                                 if (groupPrivate == GroupPrivacy.PRIVATE)
@@ -45,6 +44,7 @@ namespace DarkMultiPlayer
                                         }
                                     }
                                 }
+                                string[] groupMembers = mr.Read<string[]>();
                                 if (!groups.ContainsKey(groupName))
                                 {
                                     groups.Add(groupName, new GroupObject());

@@ -45,7 +45,6 @@ namespace DarkMultiPlayerServer.Messages
             {
                 mw.Write<int>((int)GroupMessageType.SET);
                 mw.Write<string>(groupName);
-                mw.Write<string[]>(group.members.ToArray());
                 mw.Write<int>((int)group.privacy);
                 if (group.privacy == GroupPrivacy.PRIVATE)
                 {
