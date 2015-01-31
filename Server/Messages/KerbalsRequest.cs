@@ -29,6 +29,7 @@ namespace DarkMultiPlayerServer.Messages
             Messages.Chat.SendPlayerChatChannels(client);
             Messages.LockSystem.SendAllLocks(client);
             Messages.AdminSystem.SendAllAdmins(client);
+            Messages.Group.SendAllGroupsToClient(client);
             //Send kerbals
             lock (Server.universeSizeLock)
             {

@@ -89,6 +89,7 @@ namespace DarkMultiPlayerServer
                 CommandHandler.RegisterCommand("bankey", BanSystem.fetch.BanPublicKey, "Bans a Guid from the server");
                 CommandHandler.RegisterCommand("pm", PMCommand.HandleCommand, "Sends a message to a player");
                 CommandHandler.RegisterCommand("admin", AdminCommand.HandleCommand, "Sets a player as admin/removes admin from the player");
+                CommandHandler.RegisterCommand("group", GroupCommand.HandleCommand, "Modify player groups");
                 CommandHandler.RegisterCommand("whitelist", WhitelistCommand.HandleCommand, "Change the server whitelist");
                 //Register the ctrl+c event
                 Console.CancelKeyPress += new ConsoleCancelEventHandler(CatchExit);
@@ -275,6 +276,10 @@ namespace DarkMultiPlayerServer
             if (!Directory.Exists(Path.Combine(universeDirectory, "Flags")))
             {
                 Directory.CreateDirectory(Path.Combine(universeDirectory, "Flags"));
+            }
+            if (!Directory.Exists(Path.Combine(universeDirectory, "Groups")))
+            {
+                Directory.CreateDirectory(Path.Combine(universeDirectory, "Groups"));
             }
             if (!Directory.Exists(Path.Combine(universeDirectory, "Players")))
             {

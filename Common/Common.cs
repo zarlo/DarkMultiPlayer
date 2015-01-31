@@ -17,11 +17,16 @@ namespace DarkMultiPlayerCommon
         //Split messages into 8kb chunks to higher priority messages have more injection points into the TCP stream.
         public const int SPLIT_MESSAGE_LENGTH = 8192;
         //Bump this every time there is a network change (Basically, if MessageWriter or MessageReader is touched).
-        public const int PROTOCOL_VERSION = 34;
+        public const int PROTOCOL_VERSION = 35;
         //Program version. This is written in the build scripts.
         public const string PROGRAM_VERSION = "Custom";
         //Compression threshold
         public const int COMPRESSION_THRESHOLD = 4096;
+
+        public static string CalculateSHA256HashFromString(string text)
+        {
+            return CalculateSHA256Hash(Encoding.UTF8.GetBytes(text));
+        }
 
         public static string CalculateSHA256Hash(string fileName)
         {
@@ -439,6 +444,7 @@ namespace DarkMultiPlayerCommon
         MOTD_REQUEST,
         WARP_CONTROL,
         LOCK_SYSTEM,
+        GROUP_SYSTEM,
         MOD_DATA,
         SPLIT_MESSAGE,
         CONNECTION_END
@@ -473,6 +479,7 @@ namespace DarkMultiPlayerCommon
         WARP_CONTROL,
         ADMIN_SYSTEM,
         LOCK_SYSTEM,
+        GROUP_SYSTEM,
         MOD_DATA,
         SPLIT_MESSAGE,
         CONNECTION_END
@@ -605,6 +612,18 @@ namespace DarkMultiPlayerCommon
         SET,
     }
 
+    public enum GroupMessageType
+    {
+        SET,
+        REMOVE,
+    }
+
+    public enum GroupPrivacy
+    {
+        PUBLIC,
+        PRIVATE
+    }
+
     public class ClientMessage
     {
         public bool handled;
@@ -638,6 +657,14 @@ namespace DarkMultiPlayerCommon
         public int rateIndex = 0;
         public long serverClock = 0;
         public double planetTime = 0;
+    }
+
+    public class GroupObject
+    {
+        public List<string> members = new List<string>();
+        public GroupPrivacy privacy = GroupPrivacy.PUBLIC;
+        public string passwordSalt;
+        public string passwordHash;
     }
 
     public enum HandshakeReply : int

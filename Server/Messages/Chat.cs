@@ -11,17 +11,20 @@ namespace DarkMultiPlayerServer.Messages
 
         public static void SendChatMessageToClient(ClientObject client, string messageText)
         {
-            ServerMessage newMessage = new ServerMessage();
-            newMessage.type = ServerMessageType.CHAT_MESSAGE;
-            using (MessageWriter mw = new MessageWriter())
+            if (client != null)
             {
-                mw.Write<int>((int)ChatMessageType.PRIVATE_MESSAGE);
-                mw.Write<string>(Settings.settingsStore.consoleIdentifier);
-                mw.Write<string>(client.playerName);
-                mw.Write(messageText);
-                newMessage.data = mw.GetMessageBytes();
+                ServerMessage newMessage = new ServerMessage();
+                newMessage.type = ServerMessageType.CHAT_MESSAGE;
+                using (MessageWriter mw = new MessageWriter())
+                {
+                    mw.Write<int>((int)ChatMessageType.PRIVATE_MESSAGE);
+                    mw.Write<string>(Settings.settingsStore.consoleIdentifier);
+                    mw.Write<string>(client.playerName);
+                    mw.Write(messageText);
+                    newMessage.data = mw.GetMessageBytes();
+                }
+                ClientHandler.SendToClient(client, newMessage, true);
             }
-            ClientHandler.SendToClient(client, newMessage, true);
         }
 
         public static void SendChatMessageToAll(string messageText)

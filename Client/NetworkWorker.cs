@@ -814,6 +814,9 @@ namespace DarkMultiPlayer
                     case ServerMessageType.ADMIN_SYSTEM:
                         AdminSystem.fetch.HandleAdminMessage(message.data);
                         break;
+                    case ServerMessageType.GROUP_SYSTEM:
+                        GroupSystem.fetch.HandleGroupMessage(message.data);
+                        break;
                     case ServerMessageType.LOCK_SYSTEM:
                         LockSystem.fetch.HandleLockMessage(message.data);
                         break;

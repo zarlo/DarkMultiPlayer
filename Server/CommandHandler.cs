@@ -10,8 +10,10 @@ namespace DarkMultiPlayerServer
 
         public static void ThreadMain()
         {
+            #if !DEBUG
             try
             {
+            #endif
                 //Register commands
                 CommandHandler.RegisterCommand("help", CommandHandler.DisplayHelp, "Displays this help");
                 CommandHandler.RegisterCommand("say", CommandHandler.Say, "Broadcasts a message to clients");
@@ -25,14 +27,17 @@ namespace DarkMultiPlayerServer
                 while (Server.serverRunning)
                 {
                     string input = "";
+                    #if !DEBUG
                     try
                     {
+                    #endif
                         input = Console.ReadLine();
                         if (input == null)
                         {
                             DarkLog.Debug("Terminal may be not attached or broken, Exiting out of command handler");
                             return;
                         }
+                    #if !DEBUG
                     }
                     catch
                     {
@@ -42,6 +47,7 @@ namespace DarkMultiPlayerServer
                         }
                         Thread.Sleep(500);
                     }
+                    #endif
                     DarkLog.Normal("Command input: " + input);
                     if (input.StartsWith("/"))
                     {
@@ -55,6 +61,7 @@ namespace DarkMultiPlayerServer
                         }
                     }
                 }
+            #if !DEBUG
             }
             catch (Exception e)
             {
@@ -64,6 +71,7 @@ namespace DarkMultiPlayerServer
                     throw;
                 }
             }
+            #endif
         }
 
         public static void HandleServerInput(string input)
