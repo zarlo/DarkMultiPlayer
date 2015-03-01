@@ -340,7 +340,10 @@ namespace DarkMultiPlayer
             newChannelMessages.Enqueue(ce);
             if (!display)
             {
-                chatButtonHighlighted = true;
+                if (ce.fromPlayer != consoleIdentifier)
+                {
+                    chatButtonHighlighted = true;
+                }
                 if (ce.channel != "")
                 {
                     ScreenMessages.PostScreenMessage(ce.fromPlayer + " -> #" + ce.channel + ": " + ce.message, 5f, ScreenMessageStyle.UPPER_LEFT);
@@ -576,7 +579,7 @@ namespace DarkMultiPlayer
                     channelMessages.Add(ce.channel, new List<string>());
                 }
                 //Highlight if the channel isn't selected.
-                if (selectedChannel != null && ce.channel == "")
+                if (selectedChannel != null && ce.channel == "" && ce.fromPlayer != consoleIdentifier)
                 {
                     if (!highlightChannel.Contains(ce.channel))
                     {
@@ -594,10 +597,18 @@ namespace DarkMultiPlayer
                 if (selectedChannel == null && selectedPMChannel == null && ce.channel == "")
                 {
                     chatScrollPos.y = float.PositiveInfinity;
+                    if (chatLocked)
+                    {
+                        selectTextBox = true;
+                    }
                 }
                 if (selectedChannel != null && selectedPMChannel == null && ce.channel == selectedChannel)
                 {
                     chatScrollPos.y = float.PositiveInfinity;
+                    if (chatLocked)
+                    {
+                        selectTextBox = true;
+                    }
                 }
                 channelMessages[ce.channel].Add(ce.fromPlayer + ": " + ce.message);
             }
@@ -632,6 +643,10 @@ namespace DarkMultiPlayer
                 if (selectedPMChannel != null && selectedChannel == null && (pe.fromPlayer == selectedPMChannel || pe.fromPlayer == Settings.fetch.playerName))
                 {
                     chatScrollPos.y = float.PositiveInfinity;
+                    if (chatLocked)
+                    {
+                        selectTextBox = true;
+                    }
                 }
                 if (pe.fromPlayer != Settings.fetch.playerName)
                 {
@@ -655,13 +670,13 @@ namespace DarkMultiPlayer
                     }
                 }
                 //Move the bar to the bottom on a new message
-                if (selectedChannel == null && selectedPMChannel == null && consoleIdentifier == "")
-                {
-                    chatScrollPos.y = float.PositiveInfinity;
-                }
                 if (selectedChannel != null && selectedPMChannel == null && consoleIdentifier == selectedChannel)
                 {
                     chatScrollPos.y = float.PositiveInfinity;
+                    if (chatLocked)
+                    {
+                        selectTextBox = true;
+                    }
                 }
                 consoleMessages.Add(ce.message);
             }
