@@ -9,6 +9,7 @@ namespace DarkMultiPlayer
 {
     public class VesselWorker
     {
+        private int buggeredKerbalID = 0;
         public bool workerEnabled;
         //Hooks enabled
         private bool registered;
@@ -1135,7 +1136,21 @@ namespace DarkMultiPlayer
         {
             if (crewNode != null)
             {
-                ProtoCrewMember protoCrew = new ProtoCrewMember(HighLogic.CurrentGame.Mode, crewNode);
+                ProtoCrewMember protoCrew = null;
+                try
+                {
+                    protoCrew = new ProtoCrewMember(HighLogic.CurrentGame.Mode, crewNode);
+                }
+                catch
+                {
+                    string buggeredKerbalFolder = Path.Combine(KSPUtil.ApplicationRootPath, "BuggeredKerbals");
+                    if (!Directory.Exists(buggeredKerbalFolder))
+                    {
+                        Directory.CreateDirectory(buggeredKerbalFolder);
+                    }
+                    string buggeredKerbalFile = Path.Combine(buggeredKerbalFolder, "kerbal-" + buggeredKerbalID++ + ".txt");
+                    crewNode.Save(buggeredKerbalFile);
+                }
                 if (protoCrew != null)
                 {
                     if (!String.IsNullOrEmpty(protoCrew.name))
