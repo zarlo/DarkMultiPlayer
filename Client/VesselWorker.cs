@@ -54,7 +54,6 @@ namespace DarkMultiPlayer
         private Dictionary <Guid, Vessel.Situations> vesselSituations = new Dictionary<Guid, Vessel.Situations>();
         //Known kerbals
         private Dictionary<string, string> serverKerbals = new Dictionary<string, string>();
-        private Dictionary<string, Guid> assignedKerbals = new Dictionary<string, Guid>();
         //Known vessels and last send/receive time
         private Dictionary<Guid, float> serverVesselsProtoUpdate = new Dictionary<Guid, float>();
         private Dictionary<Guid, float> serverVesselsPositionUpdate = new Dictionary<Guid, float>();
@@ -107,7 +106,6 @@ namespace DarkMultiPlayer
                 }
             }
 
-            //GameEvents.debugEvents = true;
             if (workerEnabled && !registered)
             {
                 RegisterGameHooks();
@@ -116,6 +114,7 @@ namespace DarkMultiPlayer
             {
                 UnregisterGameHooks();
             }
+
             //If we aren't in a DMP game don't do anything.
             if (workerEnabled)
             {
@@ -998,7 +997,7 @@ namespace DarkMultiPlayer
             }
             else if (serverKerbals[pcm.name] != kerbalHash)
             {
-                DarkLog.Debug("Found changed kerbal, sending...");
+                DarkLog.Debug("Found changed kerbal (" + pcm.name + "), sending...");
                 kerbalDifferent = true;
             }
             if (kerbalDifferent)
@@ -1590,36 +1589,6 @@ namespace DarkMultiPlayer
                         assignName = pcm.name;
                         dodged = true;
                     }
-                    if (!assignedKerbals.ContainsKey(assignName))
-                    {
-                        assignedKerbals.Add(assignName, vesselID);
-                    }
-                    else
-                    {
-                        if (assignedKerbals[assignName] != vesselID)
-                        {
-                            ProtoCrewMember freeKerbal = null;
-                            foreach (ProtoCrewMember pcm in HighLogic.CurrentGame.CrewRoster.Crew)
-                            {
-                                if (pcm.rosterStatus == ProtoCrewMember.RosterStatus.Available)
-                                {
-                                    freeKerbal = pcm;
-                                    DarkLog.Debug("Assigned kerbal " + freeKerbal.name + " replacing " + configNodeValue + " for vessel " + vesselID + ", Kerbal was taken");
-                                    break;
-                                }
-                            }
-                            if (freeKerbal == null)
-                            {
-                                freeKerbal = HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Crew);
-                                DarkLog.Debug("Created kerbal " + freeKerbal.name + " replacing " + configNodeValue + " for vessel " + vesselID + ", Kerbal was taken");
-                            }
-                            freeKerbal.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
-                            freeKerbal.seatIdx = crewIndex;
-                            partNode.SetValue("crew", freeKerbal.name, crewIndex);
-                            assignName = freeKerbal.name;
-                            dodged = true;
-                        }
-                    }
 
                     if (!HighLogic.CurrentGame.CrewRoster.Exists(assignName))
                     {
@@ -1651,7 +1620,6 @@ namespace DarkMultiPlayer
             if (dyingVesselID == fromDockedVesselID || dyingVesselID == toDockedVesselID)
             {
                 DarkLog.Debug("Removing vessel " + dyingVesselID + ", name: " + dyingVessel.vesselName + " from the server: Docked");
-                unassignKerbals(dyingVesselID);
                 if (serverVessels.Contains(dyingVesselID))
                 {
                     serverVessels.Remove(dyingVesselID);
@@ -1711,7 +1679,7 @@ namespace DarkMultiPlayer
             }
 
             DarkLog.Debug("Removing vessel " + dyingVesselID + ", name: " + dyingVessel.vesselName + " from the server: Destroyed");
-            unassignKerbals(dyingVesselID);
+            SendKerbalsInVessel(dyingVessel);
             serverVessels.Remove(dyingVesselID);
             if (serverVesselsProtoUpdate.ContainsKey(dyingVesselID))
             {
@@ -1747,7 +1715,7 @@ namespace DarkMultiPlayer
             }
 
             DarkLog.Debug("Removing vessel " + recoveredVesselID + ", name: " + recoveredVessel.vesselName + " from the server: Recovered");
-            unassignKerbals(recoveredVesselID);
+            SendKerbalsInVessel(recoveredVessel);
             serverVessels.Remove(recoveredVesselID);
             NetworkWorker.fetch.SendVesselRemove(recoveredVesselID, false);
         }
@@ -1775,9 +1743,55 @@ namespace DarkMultiPlayer
             }
 
             DarkLog.Debug("Removing vessel " + terminatedVesselID + ", name: " + terminatedVessel.vesselName + " from the server: Terminated");
-            unassignKerbals(terminatedVesselID);
+            SendKerbalsInVessel(terminatedVessel);
             serverVessels.Remove(terminatedVesselID);
             NetworkWorker.fetch.SendVesselRemove(terminatedVesselID, false);
+        }
+
+        public void SendKerbalsInVessel(ProtoVessel vessel)
+        {
+            if (vessel == null)
+            {
+                return;
+            }
+            if (vessel.protoPartSnapshots == null)
+            {
+                return;
+            }
+            foreach (ProtoPartSnapshot part in vessel.protoPartSnapshots)
+            {
+                if (part == null)
+                {
+                    continue;
+                }
+                foreach (ProtoCrewMember pcm in part.protoModuleCrew)
+                {
+                    SendKerbalIfDifferent(pcm);
+                }
+            }
+        }
+
+        public void SendKerbalsInVessel(Vessel vessel)
+        {
+            if (vessel == null)
+            {
+                return;
+            }
+            if (vessel.parts == null)
+            {
+                return;
+            }
+            foreach (Part part in vessel.parts)
+            {
+                if (part == null)
+                {
+                    continue;
+                }
+                foreach (ProtoCrewMember pcm in part.protoModuleCrew)
+                {
+                    SendKerbalIfDifferent(pcm);
+                }
+            }
         }
 
         public bool VesselRecentlyLoaded(Guid vesselID)
@@ -1853,34 +1867,6 @@ namespace DarkMultiPlayer
                 DarkLog.Debug("EVA Boarding, to: " + partAction.to.vessel.id + ", name: " + partAction.to.vessel.vesselName);
                 fromDockedVesselID = partAction.from.vessel.id;
                 toDockedVesselID = partAction.to.vessel.id;
-            }
-        }
-
-        private void unassignKerbals(Guid vesselID)
-        {
-            List<string> unassignKerbals = new List<string>();
-            foreach (KeyValuePair<string, Guid> kerbalAssignment in assignedKerbals)
-            {
-                //DarkLog.Debug("Kerbal " + kerbalAssignment.Key + " is assigned to " + kerbalAssignment.Value);
-                if (kerbalAssignment.Value == vesselID)
-                {
-                    DarkLog.Debug("Kerbal " + kerbalAssignment.Key + " unassigned from " + vesselID);
-                    unassignKerbals.Add(kerbalAssignment.Key);
-                }
-            }
-            foreach (string unassignKerbal in unassignKerbals)
-            {
-                assignedKerbals.Remove(unassignKerbal);
-                if (!isSpectating)
-                {
-                    foreach (ProtoCrewMember pcm in HighLogic.CurrentGame.CrewRoster.Crew)
-                    {
-                        if (pcm.name == unassignKerbal)
-                        {
-                            SendKerbalIfDifferent(pcm);
-                        }
-                    }
-                }
             }
         }
 
