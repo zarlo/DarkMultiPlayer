@@ -47,8 +47,6 @@ namespace DarkMultiPlayer
             //Kerbals are put in the vessel *after* OnVesselCreate. Thanks squad!.
             if (vesselToKerbal.ContainsKey(vessel.id))
             {
-                //Should happen once after the initial load
-                DarkLog.Debug("OnVesselCreate has a duplicate entry for " + vessel.id + ", cleaning!");
                 OnVesselDestroyed(vessel);
             }
             if (vessel.GetCrewCount() > 0)
@@ -59,7 +57,7 @@ namespace DarkMultiPlayer
                     vesselToKerbal[vessel.id].Add(pcm.name);
                     if (kerbalToVessel.ContainsKey(pcm.name) && kerbalToVessel[pcm.name] != vessel.id)
                     {
-                        DarkLog.Debug("Warning, kerbal failed to reassign on " + vessel.id + " ( " + vessel.name + " )");
+                        DarkLog.Debug("Warning, kerbal double take on " + vessel.id + " ( " + vessel.name + " )");
                     }
                     kerbalToVessel[pcm.name] = vessel.id;
                     DarkLog.Debug("OVC " + pcm.name + " belongs to " + vessel.id);
@@ -116,20 +114,16 @@ namespace DarkMultiPlayer
                         foreach (ProtoCrewMember possibleKerbal in HighLogic.CurrentGame.CrewRoster.Crew)
                         {
                             bool kerbalOk = true;
-                            DarkLog.Debug("Got possible kerbal " + possibleKerbal.name);
                             if (kerbalOk && kerbalToVessel.ContainsKey(possibleKerbal.name) && (takenKerbals.Contains(possibleKerbal.name) || kerbalToVessel[possibleKerbal.name] != protovesselID))
                             {
-                                DarkLog.Debug("Possible kerbal " + possibleKerbal.name + " is already assigned to another vessel");
                                 kerbalOk = false;
                             }
                             if (kerbalOk && possibleKerbal.gender != newKerbalGender)
                             {
-                                DarkLog.Debug("Possible kerbal " + possibleKerbal.name + " is the wrong gender");
                                 kerbalOk = false;
                             }
                             if (kerbalOk && newExperienceTrait != null && newExperienceTrait != possibleKerbal.experienceTrait.TypeName)
                             {
-                                DarkLog.Debug("Possible kerbal " + possibleKerbal.name + " is the wrong type (" + possibleKerbal.experienceTrait.TypeName + " != " + newExperienceTrait + ")");
                                 kerbalOk = false;
                             }
                             if (kerbalOk)
@@ -142,16 +136,12 @@ namespace DarkMultiPlayer
                         {
                             bool kerbalOk = true;
                             ProtoCrewMember possibleKerbal = HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Crew);
-                            DarkLog.Debug("Got possible NEW kerbal " + possibleKerbal.name);
                             if (possibleKerbal.gender != newKerbalGender)
                             {
-                                DarkLog.Debug("Possible kerbal " + possibleKerbal.name + " is the wrong gender");
                                 kerbalOk = false;
                             }
                             if (newExperienceTrait != null && newExperienceTrait != possibleKerbal.experienceTrait.TypeName)
                             {
-                                //Trust me, I'm A engineer!
-                                DarkLog.Debug("Possible kerbal " + possibleKerbal.name + " is not a " + newExperienceTrait);
                                 kerbalOk = false;
                             }
                             if (kerbalOk)
@@ -159,7 +149,6 @@ namespace DarkMultiPlayer
                                 newKerbal = possibleKerbal;
                             }
                         }
-                        DarkLog.Debug("Crew reassigned in " + protovesselID + ", replaced " + currentKerbalName + " with " + newKerbal.name);
                         partNode.SetValue("crew", newKerbal.name, crewIndex);
                         newKerbal.seatIdx = crewIndex;
                         newKerbal.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
@@ -175,7 +164,6 @@ namespace DarkMultiPlayer
             vesselToKerbal[protovesselID] = takenKerbals;
             foreach (string name in takenKerbals)
             {
-                DarkLog.Debug(name + " belongs to " + protovesselID);
                 kerbalToVessel[name] = protovesselID;
             }
         }
