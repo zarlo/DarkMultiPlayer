@@ -1490,7 +1490,8 @@ namespace DarkMultiPlayer
                     {
                         if (possibleAsteroid.protoPartSnapshots[0].partName == "PotatoRoid")
                         {
-                            DarkLog.Debug("Registering remote server asteroid");
+                            //Noise. Ugh.
+                            //DarkLog.Debug("Registering remote server asteroid");
                             AsteroidWorker.fetch.RegisterServerAsteroid(possibleAsteroid.vesselID.ToString());
                         }
                     }
