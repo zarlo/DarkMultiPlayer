@@ -1425,9 +1425,9 @@ namespace DarkMultiPlayer
             try
             {
                 DodgeVesselActionGroups(inputNode);
-                DodgeVesselCrewValues(inputNode);
                 RemoveManeuverNodesFromProtoVessel(inputNode);
                 DodgeVesselLandedStatus(inputNode);
+                KerbalReassigner.fetch.DodgeKerbals(inputNode, protovesselID);
                 pv = new ProtoVessel(inputNode, HighLogic.CurrentGame);
                 ConfigNode cn = new ConfigNode();
                 pv.Save(cn);
@@ -1561,56 +1561,6 @@ namespace DarkMultiPlayer
                 return boolValue + ", " + currentPlanetTime;
             }
             return input;
-        }
-
-        private bool DodgeVesselCrewValues(ConfigNode vesselNode)
-        {
-            bool dodged = false;
-            Guid vesselID = new Guid(Common.ConvertConfigStringToGUIDString(vesselNode.GetValue("pid")));
-            foreach (ConfigNode partNode in vesselNode.GetNodes("PART"))
-            {
-                int crewIndex = 0;
-                foreach (string configNodeValue in partNode.GetValues("crew"))
-                {
-                    string assignName = configNodeValue;
-                    int configNodeValueInt = 0;
-                    if (Int32.TryParse(configNodeValue, out configNodeValueInt))
-                    {
-                        ProtoCrewMember pcm = null;
-                        while (pcm == null || HighLogic.CurrentGame.CrewRoster.Exists(pcm.name))
-                        {
-                            pcm = CrewGenerator.RandomCrewMemberPrototype(ProtoCrewMember.KerbalType.Crew);
-                        }
-                        pcm.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
-                        pcm.seatIdx = crewIndex;
-                        AddCrewMemberToRoster(pcm);
-                        partNode.SetValue("crew", pcm.name, crewIndex);
-                        DarkLog.Debug("Created kerbal " + pcm.name + " for crew index " + configNodeValue + " for vessel " + vesselID + ", Updated vessel to 0.24");
-                        assignName = pcm.name;
-                        dodged = true;
-                    }
-
-                    if (!HighLogic.CurrentGame.CrewRoster.Exists(assignName))
-                    {
-                        ProtoCrewMember pcm = CrewGenerator.RandomCrewMemberPrototype(ProtoCrewMember.KerbalType.Crew);
-                        pcm.name = assignName;
-                        pcm.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
-                        pcm.seatIdx = crewIndex;
-                        AddCrewMemberToRoster(pcm);
-                        DarkLog.Debug("Created kerbal " + pcm.name + " for vessel " + vesselID + ", Kerbal was missing");
-                        dodged = true;
-                    }
-                    else
-                    {
-                        ProtoCrewMember pcm = HighLogic.CurrentGame.CrewRoster[assignName];
-                        pcm.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
-                        pcm.type = ProtoCrewMember.KerbalType.Crew;
-                        pcm.seatIdx = crewIndex;
-                    }
-                    crewIndex++;
-                }
-            }
-            return dodged;
         }
 
         public void OnVesselDestroyed(Vessel dyingVessel)
