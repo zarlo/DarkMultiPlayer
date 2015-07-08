@@ -1163,6 +1163,7 @@ namespace DarkMultiPlayer
                 ConfigNode kerbalNode = ConfigNodeSerializer.fetch.Deserialize(kerbalData);
                 if (kerbalNode != null)
                 {
+                    kerbalNode.SetValue("state", "Available");
                     VesselWorker.fetch.QueueKerbal(planetTime, kerbalName, kerbalNode);
                 }
                 else
