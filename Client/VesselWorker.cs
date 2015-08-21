@@ -1221,6 +1221,20 @@ namespace DarkMultiPlayer
             }
             DarkLog.Debug("Vessels (" + numberOfLoads + ") loaded into game");
         }
+
+        public void ReloadMyVessel(Vessel vessel)
+        {
+            Client.fetch.StartCoroutine(ReloadMyVesselOnFixedUpdate(vessel));
+        }
+
+        private IEnumerator<WaitForFixedUpdate> ReloadMyVesselOnFixedUpdate(Vessel vessel)
+        {
+            yield return new WaitForFixedUpdate();
+            ConfigNode saveVessel = new ConfigNode();
+            vessel.BackupVessel().Save(saveVessel);
+            LoadVessel(saveVessel, vessel.id, false);
+        }
+
         //Also called from QuickSaveLoader
         public void LoadVessel(ConfigNode vesselNode, Guid protovesselID, bool ignoreFlyingKill)
         {

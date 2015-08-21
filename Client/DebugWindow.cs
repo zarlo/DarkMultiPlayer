@@ -86,6 +86,10 @@ namespace DarkMultiPlayer
         {
             GUILayout.BeginVertical();
             GUI.DragWindow(moveRect);
+            if (GUILayout.Button("Some button"))
+            {
+                VesselWorker.fetch.ReloadMyVessel(FlightGlobals.fetch.activeVessel);
+            }
             GameEvents.debugEvents = GUILayout.Toggle(GameEvents.debugEvents, "Debug GameEvents", buttonStyle);
             displayFast = GUILayout.Toggle(displayFast, "Fast debug update", buttonStyle);
             displayVectors = GUILayout.Toggle(displayVectors, "Display vessel vectors", buttonStyle);
