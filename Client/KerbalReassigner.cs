@@ -190,7 +190,7 @@ namespace DarkMultiPlayer
                     }
                 }
                 ProtoCrewMember pcm = CrewGenerator.RandomCrewMemberPrototype(ProtoCrewMember.KerbalType.Crew);
-                pcm.ChangeName(kerbalName);
+				pcm.name = kerbalName;
                 pcm.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
                 AddCrewMemberToRoster(pcm);
                 DarkLog.Debug("Created kerbal " + pcm.name + " for vessel " + vesselID + ", Kerbal was missing");

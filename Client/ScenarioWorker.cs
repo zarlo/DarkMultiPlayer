@@ -66,7 +66,7 @@ namespace DarkMultiPlayer
                         DarkLog.Debug("Generating missing kerbal " + kerbalName + " for rescue contract");
 
                         rescueKerbal = HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Unowned);
-                        rescueKerbal.ChangeName(kerbalName);
+						rescueKerbal.name = kerbalName;
                         rescueKerbal.gender = (ProtoCrewMember.Gender)kerbalGender;
                         rescueKerbal.rosterStatus = ProtoCrewMember.RosterStatus.Assigned;
                     }
@@ -99,7 +99,7 @@ namespace DarkMultiPlayer
                             DarkLog.Debug("Spawning missing tourist " + touristName + " for tourism contract");
                             pcm = HighLogic.CurrentGame.CrewRoster.GetNewKerbal(ProtoCrewMember.KerbalType.Tourist);
                             pcm.rosterStatus = ProtoCrewMember.RosterStatus.Available;
-                            pcm.ChangeName(touristName);
+							pcm.name = touristName;
                         }
                         else
                         {
@@ -325,7 +325,7 @@ namespace DarkMultiPlayer
                             }
                             DarkLog.Debug("Generating missing kerbal from ProgressTracking: " + kerbalName);
                             ProtoCrewMember pcm = CrewGenerator.RandomCrewMemberPrototype(ProtoCrewMember.KerbalType.Crew);
-                            pcm.ChangeName(kerbalName);
+							pcm.name = kerbalName ;
                             AddCrewMemberToRoster(pcm);
                             //Also send it off to the server
                             VesselWorker.fetch.SendKerbalIfDifferent(pcm);
@@ -446,7 +446,7 @@ namespace DarkMultiPlayer
             try
             {
                 HighLogic.CurrentGame.scenarios.Add(newModule);
-                newModule.Load(ScenarioRunner.Instance);
+				newModule.Load(ScenarioRunner.fetch);
             }
             catch
             {

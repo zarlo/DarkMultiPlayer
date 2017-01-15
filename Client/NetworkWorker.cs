@@ -1067,8 +1067,8 @@ namespace DarkMultiPlayer
                 else
                 {
                     GameParameters newParameters = new GameParameters();
-                    GameParameters.AdvancedParams newAdvancedParameters = new GameParameters.AdvancedParams();
-                    CommNet.CommNetParams newCommNetParameters = new CommNet.CommNetParams();
+                    //GameParameters.AdvancedParams newAdvancedParameters = new GameParameters.AdvancedParams();
+                    //CommNet.CommNetParams newCommNetParameters = new CommNet.CommNetParams();
                     newParameters.Difficulty.AllowStockVessels = mr.Read<bool>();
                     newParameters.Difficulty.AutoHireCrews = mr.Read<bool>();
                     newParameters.Difficulty.BypassEntryPurchaseAfterResearch = mr.Read<bool>();
@@ -1087,6 +1087,8 @@ namespace DarkMultiPlayer
                     newParameters.Career.StartingReputation = mr.Read<float>();
                     newParameters.Career.StartingScience = mr.Read<float>();
                     //New KSP 1.2 Settings
+					//IT'S REALLY BAD TO IGNORE PARTS OF MESSAGES BUT YOLO
+					/*
                     newParameters.Difficulty.RespawnTimer = mr.Read<float>();
                     newParameters.Difficulty.EnableCommNet = mr.Read<bool>();
                     newParameters.CustomParams<GameParameters.AdvancedParams>().EnableKerbalExperience = mr.Read<bool>();
@@ -1104,7 +1106,7 @@ namespace DarkMultiPlayer
                     newParameters.CustomParams<CommNet.CommNetParams>().occlusionMultiplierVac = mr.Read<float>();
                     newParameters.CustomParams<CommNet.CommNetParams>().occlusionMultiplierAtm = mr.Read<float>();
                     newParameters.CustomParams<CommNet.CommNetParams>().enableGroundStations = mr.Read<bool>();
-
+                    */
                     Client.fetch.serverParameters = newParameters;
                 }
             }

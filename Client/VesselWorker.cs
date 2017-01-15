@@ -1099,7 +1099,7 @@ namespace DarkMultiPlayer
         public void LoadKerbalsIntoGame()
         {
             DarkLog.Debug("Loading kerbals into game");
-            MethodInfo addMemberToCrewRosterMethod = typeof(KerbalRoster).GetMethod("AddCrewMember", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo addMemberToCrewRosterMethod = typeof(KerbalRoster).GetMethod("AddCrewMember", BindingFlags.NonPublic | BindingFlags.Instance);
             AddCrewMemberToRoster = (AddCrewMemberToRosterDelegate)Delegate.CreateDelegate(typeof(AddCrewMemberToRosterDelegate), HighLogic.CurrentGame.CrewRoster, addMemberToCrewRosterMethod);
             if (AddCrewMemberToRoster == null)
             {
@@ -1148,10 +1148,10 @@ namespace DarkMultiPlayer
             if (crewNode.GetValue("type") == "Tourist")
             {
                 ConfigNode dmpNode = null;
-                if (crewNode.TryGetNode("DarkMultiPlayer", ref dmpNode))
+				if ((dmpNode = crewNode.GetNode("DarkMultiPlayer")) != null)
                 {
                     string dmpOwner = null;
-                    if (dmpNode.TryGetValue("contractOwner", ref dmpOwner))
+					if ((dmpOwner = dmpNode.GetValue("contractOwner")) != null)
                     {
                         if (dmpOwner != Settings.fetch.playerPublicKey)
                         {
@@ -1211,11 +1211,11 @@ namespace DarkMultiPlayer
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].experienceLevel = protoCrew.experienceLevel;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].experienceTrait = protoCrew.experienceTrait;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].gender = protoCrew.gender;
-                HighLogic.CurrentGame.CrewRoster[protoCrew.name].gExperienced = protoCrew.gExperienced;
+                //HighLogic.CurrentGame.CrewRoster[protoCrew.name].gExperienced = protoCrew.gExperienced;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].hasToured = protoCrew.hasToured;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].isBadass = protoCrew.isBadass;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].KerbalRef = protoCrew.KerbalRef;
-                HighLogic.CurrentGame.CrewRoster[protoCrew.name].outDueToG = protoCrew.outDueToG;
+                //HighLogic.CurrentGame.CrewRoster[protoCrew.name].outDueToG = protoCrew.outDueToG;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].rosterStatus = protoCrew.rosterStatus;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].seat = protoCrew.seat;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].seatIdx = protoCrew.seatIdx;
@@ -1223,7 +1223,7 @@ namespace DarkMultiPlayer
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].trait = protoCrew.trait;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].type = protoCrew.type;
                 HighLogic.CurrentGame.CrewRoster[protoCrew.name].UTaR = protoCrew.UTaR;
-                HighLogic.CurrentGame.CrewRoster[protoCrew.name].veteran = protoCrew.veteran;
+                //HighLogic.CurrentGame.CrewRoster[protoCrew.name].veteran = protoCrew.veteran;
             }
         }
         //Called from main
@@ -1239,11 +1239,11 @@ namespace DarkMultiPlayer
                     while (vesselQueue.Value.Count > 0)
                     {
                         VesselProtoUpdate vpu = vesselQueue.Value.Dequeue();
-                        ConfigNode dmpNode = null;
-                        if (vpu.vesselNode.TryGetNode("DarkMultiPlayer", ref dmpNode))
+						ConfigNode dmpNode = vpu.vesselNode.GetNode("DarkMultiPlayer");
+						if (dmpNode != null)
                         {
-                            string contractOwner = null;
-                            if (dmpNode.TryGetValue("contractOwner", ref contractOwner))
+							string contractOwner = dmpNode.GetValue("contractOwner");
+							if (contractOwner != null)
                             {
                                 if (contractOwner != Settings.fetch.playerPublicKey)
                                 {
@@ -1719,7 +1719,7 @@ namespace DarkMultiPlayer
         }
 
         //TODO: I don't know what this bool does?
-        public void OnVesselRecovered(ProtoVessel recoveredVessel, bool something)
+        public void OnVesselRecovered(ProtoVessel recoveredVessel)
         {
             Guid recoveredVesselID = recoveredVessel.vesselID;
 

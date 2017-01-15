@@ -155,7 +155,7 @@ namespace DarkMultiPlayer
                                 }
                                 break;
                             case (GameScenes.SPACECENTER):
-                                myPlayerStatus.statusText = "At Space Center";
+                                myPlayerStatus.statusText = "At Space Center in 1.0.5 :D";
                                 break;
                             case (GameScenes.TRACKSTATION):
                                 myPlayerStatus.statusText = "At Tracking Station";

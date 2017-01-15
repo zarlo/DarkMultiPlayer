@@ -368,7 +368,7 @@ namespace DarkMultiPlayer
                     //handle use of cheats
                     if (!serverAllowCheats)
                     {
-                        CheatOptions.InfinitePropellant = false;
+                        //CheatOptions.InfinitePropellant = false;
                         CheatOptions.NoCrashDamage = false;
                         CheatOptions.IgnoreAgencyMindsetOnContracts = false;
                         CheatOptions.IgnoreMaxTemperature = false;

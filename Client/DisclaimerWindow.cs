@@ -17,12 +17,12 @@ namespace DarkMultiPlayer
             disclaimerText += "In order to use DarkMultiPlayer, you must allow the mod to use this information.\n";
             disclaimerText += "\n";
             disclaimerText += "For more information, read the KSP addon rules on the forums.\n";
-
+			/*
             PopupDialog.SpawnPopupDialog(new Vector2(0, 0),
                 new Vector2(0, 0),
                 new MultiOptionDialog(disclaimerText,
                     "DarkMultiPlayer - Disclaimer",
-                    HighLogic.UISkin,
+                    HighLogic.Skin,
                     new Rect(.5f, .5f, 425f, 150f),
                     new DialogGUIFlexibleSpace(),
                     new DialogGUIVerticalLayout(
@@ -56,6 +56,7 @@ namespace DarkMultiPlayer
                 true,
                 HighLogic.UISkin
             );
+            */
         }
     }
 }
