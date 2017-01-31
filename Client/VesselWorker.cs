@@ -1229,12 +1229,15 @@ namespace DarkMultiPlayer
                     while (vesselQueue.Value.Count > 0)
                     {
                         VesselProtoUpdate vpu = vesselQueue.Value.Dequeue();
+                        DarkLog.Debug("INITIAL LOAD: " + vpu.vesselID);
                         ConfigNode dmpNode = null;
                         if (vpu.vesselNode.TryGetNode("DarkMultiPlayer", ref dmpNode))
                         {
+                            DarkLog.Debug("1");
                             string contractOwner = null;
                             if (dmpNode.TryGetValue("contractOwner", ref contractOwner))
                             {
+                                DarkLog.Debug("2");
                                 if (contractOwner != Settings.fetch.playerPublicKey)
                                 {
                                     DarkLog.Debug("Skipping load of contract vessel that belongs to another player");
@@ -1242,18 +1245,27 @@ namespace DarkMultiPlayer
                                 }
                             }                                
                         }
+                        DarkLog.Debug("3");
                         ProtoVessel pv = CreateSafeProtoVesselFromConfigNode(vpu.vesselNode, vpu.vesselID);
+                        DarkLog.Debug("4");
                         if (pv != null && pv.vesselID == vpu.vesselID)
                         {
+                            DarkLog.Debug("5");
                             RegisterServerVessel(pv.vesselID);
+                            DarkLog.Debug("6");
                             RegisterServerAsteriodIfVesselIsAsteroid(pv);
+                            DarkLog.Debug("7");
                             HighLogic.CurrentGame.flightState.protoVessels.Add(pv);
+                            DarkLog.Debug("8");
                             numberOfLoads++;
+                            DarkLog.Debug("9");
                         }
                         else
                         {
+                            DarkLog.Debug("10");
                             DarkLog.Debug("WARNING: Protovessel " + vpu.vesselID + " is DAMAGED!. Skipping load.");
                             ChatWorker.fetch.PMMessageServer("WARNING: Protovessel " + vpu.vesselID + " is DAMAGED!. Skipping load.");
+                            DarkLog.Debug("11");
                         }
                     }
                 }
@@ -1540,15 +1552,22 @@ namespace DarkMultiPlayer
         {
             if (vesselNode != null)
             {
+                DarkLog.Debug("DVAG1");
                 ConfigNode actiongroupNode = vesselNode.GetNode("ACTIONGROUPS");
+                DarkLog.Debug("DVAG2");
                 if (actiongroupNode != null)
                 {
+                    DarkLog.Debug("DVAG3");
                     foreach (string keyName in actiongroupNode.values.DistinctNames())
                     {
+                        DarkLog.Debug("DVAG4");
                         string valueCurrent = actiongroupNode.GetValue(keyName);
+                        DarkLog.Debug("DVAG5");
                         string valueDodge = DodgeValueIfNeeded(valueCurrent);
+                        DarkLog.Debug("DVAG6");
                         if (valueCurrent != valueDodge)
                         {
+                            DarkLog.Debug("DVAG7");
                             DarkLog.Debug("Dodged actiongroup " + keyName);
                             actiongroupNode.SetValue(keyName, valueDodge);
                         }
@@ -1618,12 +1637,18 @@ namespace DarkMultiPlayer
 
         private string DodgeValueIfNeeded(string input)
         {
+            DarkLog.Debug("DVIN1");
             string boolValue = input.Substring(0, input.IndexOf(", "));
+            DarkLog.Debug("DVIN2");
             string timeValue = input.Substring(input.IndexOf(", ") + 1);
+            DarkLog.Debug("DVIN3");
             double vesselPlanetTime = Double.Parse(timeValue);
+            DarkLog.Debug("DVIN4");
             double currentPlanetTime = Planetarium.GetUniversalTime();
+            DarkLog.Debug("DVIN5");
             if (vesselPlanetTime > currentPlanetTime)
             {
+                DarkLog.Debug("DVIN6");
                 return boolValue + ", " + currentPlanetTime;
             }
             return input;

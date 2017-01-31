@@ -15,6 +15,7 @@ namespace DarkMultiPlayer
             //Use messageQueue if looking for messages that don't normally show up in the log.
 
             messageQueue.Enqueue(string.Format("DarkMultiPlayer: {0}", message));
+            Update();
         }
 
         public static void Update()
